@@ -8,10 +8,10 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { secure: true, standard: true } }])
-
+let win: BrowserWindow
 async function createWindow() {
   // Create the browser window.
-  const win = new BrowserWindow({
+  win = new BrowserWindow({
     width: 800,
     height: 600,
     frame: false,
@@ -100,4 +100,13 @@ ipcMain.handle('open', async () => {
   })
   console.log(res)
   return res
+})
+
+ipcMain.on('minimize', () => {
+  win.minimize()
+})
+
+ipcMain.on('maximize', () => {
+  const falg = win.isFullScreen()
+  win.setFullScreen(!falg)
 })

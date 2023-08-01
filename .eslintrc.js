@@ -13,6 +13,8 @@ module.exports = {
     semi: [0],
     'import/no-extraneous-dependencies': 'off',
     'no-restricted-syntax': 'off',
+    'linebreak-style': 'off',
+    'object-curly-newline': 'off',
   },
   overrides: [
     {
