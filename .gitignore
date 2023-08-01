@@ -26,3 +26,5 @@ pnpm-debug.log*
 /dist_electron
 
 pnpm-lock.yaml
+
+.history

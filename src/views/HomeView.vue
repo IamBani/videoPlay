@@ -1,4 +1,5 @@
 <template>
+  <title-bar></title-bar>
   <div id="artRef" @drop="handledrop" @dragenter.prevent @dragover.prevent></div>
   <n-button tertiary type="primary" @click="handleClick">文件</n-button>
 </template>
