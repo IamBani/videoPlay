@@ -1,7 +1,13 @@
 import { contextBridge, ipcRenderer } from 'electron'
 
+export interface file {
+  name: string,
+  path: string,
+  size: number
+}
+
 export interface Api {
-  sendMsg: () => Promise<string[] | undefined>
+  sendMsg: () => Promise<file[] | undefined>
   sendMinimize: () => void
   sendMaximize: () => void
 }

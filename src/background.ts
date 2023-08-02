@@ -1,5 +1,6 @@
 import path from 'path'
 import os from 'os'
+import fs from 'fs'
 import { app, protocol, BrowserWindow, session, ipcMain, dialog } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
@@ -7,7 +8,9 @@ import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Scheme must be registered before the app is ready
-protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { secure: true, standard: true } }])
+protocol.registerSchemesAsPrivileged([
+  { scheme: 'app', privileges: { secure: true, standard: true } },
+])
 let win: BrowserWindow
 async function createWindow() {
   // Create the browser window.
@@ -59,7 +62,10 @@ app.on('ready', async () => {
   if (isDevelopment && !process.env.IS_TEST) {
     // Install Vue Devtools
     try {
-      const reactDevToolsPath = path.join(os.homedir(), '/AppData/Local/google/Chrome/User Data/Default/Extensions/nhdogjmejiglipccpnnnanhbledajbpd/6.5.0_0')
+      const reactDevToolsPath = path.join(
+        os.homedir(),
+        '/AppData/Local/google/Chrome/User Data/Default/Extensions/nhdogjmejiglipccpnnnanhbledajbpd/6.5.0_0'
+      )
       await session.defaultSession.loadExtension(reactDevToolsPath)
     } catch (error) {
       console.error('Vue Devtools failed to install:', error)
@@ -88,18 +94,30 @@ if (isDevelopment) {
   }
 }
 
-ipcMain.handle('open', async () => {
+ipcMain.handle('open', () => {
   const res = dialog.showOpenDialogSync({
     title: '请选择文件',
     filters: [
       {
-        name: 'video',
+        name: 'Movies',
         extensions: ['MP4', 'RMVB', 'MKV', 'AVI'],
       },
     ],
+    properties: ['multiSelections'],
   })
-  console.log(res)
-  return res
+  if (res) {
+    const result = res.map((item) => {
+      const name = path.basename(item)
+      const { size } = fs.statSync(item)
+      return {
+        path: item,
+        name,
+        size,
+      }
+    })
+    console.log(result)
+    return result
+  }
 })
 
 ipcMain.on('minimize', () => {

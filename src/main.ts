@@ -1,7 +1,11 @@
 import { createApp } from 'vue'
+
+import { createPinia } from 'pinia'
+
 import App from './App.vue'
 import router from './router'
 import 'normalize.css/normalize.css'
 import './Tailwind/index.css'
 
-createApp(App).use(router).mount('#app')
+const app = createPinia()
+createApp(App).use(router).use(app).mount('#app')

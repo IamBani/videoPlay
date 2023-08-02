@@ -15,6 +15,9 @@ module.exports = {
     'no-restricted-syntax': 'off',
     'linebreak-style': 'off',
     'object-curly-newline': 'off',
+    'import/no-unresolved': 'off',
+    'max-len': ['error', { code: 300 }],
+    indent: 'off',
   },
   overrides: [
     {
