@@ -18,6 +18,8 @@ module.exports = {
     'import/no-unresolved': 'off',
     'max-len': ['error', { code: 300 }],
     indent: 'off',
+    'func-call-spacing': 'off',
+    'no-spaced-func': 'off',
   },
   overrides: [
     {

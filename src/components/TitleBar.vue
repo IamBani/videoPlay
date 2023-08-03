@@ -9,6 +9,9 @@
     </div>
     <div class="flex items-center text-white">{{ name }}</div>
     <div class="flex items-center justify-end space-x-3">
+      <n-icon size="20" color="#fff" class="no-drag" @click="openSide">
+        <DehazeFilled></DehazeFilled>
+      </n-icon>
       <n-icon size="18" color="#fff" class="no-drag h-[100%]" @click="minimize">
         <MinimizeOutlined />
       </n-icon>
@@ -28,9 +31,10 @@ import {
   CloseFilled,
   MinimizeOutlined,
   FullscreenFilled,
+  DehazeFilled,
 } from '@vicons/material'
 
-import { defineProps } from 'vue'
+import { defineProps, defineEmits } from 'vue'
 
 defineProps({
   name: {
@@ -38,12 +42,15 @@ defineProps({
     default: '',
   },
 })
-
+const emit = defineEmits<{ (event: 'openSide'): void }>()
 const minimize = () => {
   window.myApi.sendMinimize()
 }
 const sendMaximize = () => {
   window.myApi.sendMaximize()
+}
+const openSide = () => {
+  emit('openSide')
 }
 </script>
 

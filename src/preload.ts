@@ -1,9 +1,11 @@
 import { contextBridge, ipcRenderer } from 'electron'
 
 export interface file {
-  name: string,
-  path: string,
+  name: string
+  path: string
   size: number
+  duration: string
+  poster: string
 }
 
 export interface Api {
