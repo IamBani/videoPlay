@@ -3,11 +3,20 @@
     <n-layout-header><title-bar :name="name" @openSide="openSide"></title-bar></n-layout-header>
     <n-layout has-sider :sider-placement="'right'">
       <n-layout-content>
-        <div id="artRef" @drop="handledrop" @dragenter.prevent @dragover.prevent></div>
-        <!-- <n-button tertiary type="primary" @click="handleClick">文件</n-button> -->
+        <div
+          id="artRef"
+          @drop="handledrop"
+          @dragenter.prevent
+          @dragover.prevent
+          class="bg-slate-900 flex justify-center items-center"
+        >
+          <n-button v-if="!instance" type="primary" @click="handleClick">
+            请选择文件或拖拽文件
+          </n-button>
+        </div>
       </n-layout-content>
-      <n-layout-sider ref="siderRef" collapse-mode="width" :collapsed-width="0">
-        <Sider></Sider>
+      <n-layout-sider :collapsed="collapsed" collapse-mode="width" :collapsed-width="0">
+        <Sider @changerUrl="changerUrl" :name="name"></Sider>
       </n-layout-sider>
     </n-layout>
   </n-layout>
@@ -21,56 +30,79 @@ import useVideoListStore from '@/store/index'
 import captureFrame from '@/utils/videoToImag'
 import { file as fileType } from '@/preload'
 
-type NLayoutSiderRef = InstanceType<typeof NLayoutSider>
-
 const videoListStore = useVideoListStore()
-let instance: Artplayer
+const instance = ref<Artplayer | undefined>()
 
 const name = ref('')
-const width = ref(0)
+const collapsed = ref(true)
 
-const siderRef = ref<NLayoutSiderRef>()
-const handleClick = () => {
-  window.myApi.sendMsg().then((res) => {
-    if (res) {
-      res.forEach((item) => videoListStore.list.push(item))
-      const file = res[0]
-      instance.url = `file:///${file.path}`
-      name.value = file.name
-    }
-  })
-}
-const handledrop = async (e: DragEvent) => {
-  if (e.dataTransfer) {
-    for await (const f of e.dataTransfer.files) {
-      console.log(f)
-      if (f.type.startsWith('video')) {
-        name.value = f.name
-        instance.url = `file:///${f.path}`
-        const result = (await captureFrame(f.path)) as unknown as fileType
-        videoListStore.list.push({ ...f, ...result })
-      }
-    }
-  }
-}
-
-const openSide = () => {
-  siderRef.value?.handleTriggerClick()
-}
-
-onMounted(() => {
-  instance = new Artplayer({
+const createArtplayer = () => {
+  instance.value = new Artplayer({
     url: '',
     container: '#artRef',
     autoplay: true,
     loop: true,
     fullscreen: true,
   })
-})
+}
+const handleClick = () => {
+  window.myApi.sendMsg().then(async (res) => {
+    if (res) {
+      if (!instance.value) {
+        createArtplayer()
+      }
+      for await (const item of res) {
+        const { path, name: filename, size, type } = item
+        const result = (await captureFrame(path)) as any
+        videoListStore.add({ path, name: filename, size, type, ...result })
+      }
+
+      const file = res[0]
+      if (instance.value) {
+        instance.value.url = `file:///${file.path}`
+        name.value = file.name
+      }
+    }
+  })
+}
+const handledrop = async (e: DragEvent) => {
+  if (e.dataTransfer) {
+    if (e.dataTransfer.files[0].type.startsWith('video')) {
+      if (!instance.value) {
+        createArtplayer()
+      }
+      if (instance.value) {
+        name.value = e.dataTransfer.files[0].name
+        instance.value.url = `file:///${e.dataTransfer.files[0].path}`
+      }
+    }
+    for await (const f of e.dataTransfer.files) {
+      if (f.type.startsWith('video')) {
+        const { path, name: filename, size, type } = f
+        const result = (await captureFrame(path)) as any
+        const list = { path, name: filename, size, type, ...result }
+        videoListStore.add(list)
+      }
+    }
+  }
+}
+const changerUrl = (item: fileType) => {
+  if (!instance.value) {
+    createArtplayer()
+  }
+  if (instance.value) {
+    instance.value.url = `file:///${item.path}`
+    name.value = item.name
+  }
+}
+const openSide = () => {
+  collapsed.value = !collapsed.value
+}
 </script>
 <style scoped lang="scss">
 #artRef {
   width: 100%;
   height: calc(100vh - 30px);
+  position: relative;
 }
 </style>

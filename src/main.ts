@@ -6,6 +6,7 @@ import App from './App.vue'
 import router from './router'
 import 'normalize.css/normalize.css'
 import './Tailwind/index.css'
+import './Tailwind/preflight.css'
 
 const app = createPinia()
 createApp(App).use(router).use(app).mount('#app')

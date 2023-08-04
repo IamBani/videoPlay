@@ -6,6 +6,7 @@ export interface file {
   size: number
   duration: string
   poster: string
+  type: string
 }
 
 export interface Api {

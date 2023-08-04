@@ -4,6 +4,7 @@ import fs from 'fs'
 import { app, protocol, BrowserWindow, session, ipcMain, dialog } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
+import { fromFile } from 'file-type'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -94,7 +95,7 @@ if (isDevelopment) {
   }
 }
 
-ipcMain.handle('open', () => {
+ipcMain.handle('open', async () => {
   const res = dialog.showOpenDialogSync({
     title: '请选择文件',
     filters: [
@@ -106,16 +107,19 @@ ipcMain.handle('open', () => {
     properties: ['multiSelections'],
   })
   if (res) {
-    const result = res.map((item) => {
+    const result = []
+    for await (const item of res) {
       const name = path.basename(item)
       const { size } = fs.statSync(item)
-      return {
+      const resd = await fromFile(item)
+      console.log(resd)
+      result.push({
         path: item,
         name,
         size,
-      }
-    })
-    console.log(result)
+        // type: mime,
+      })
+    }
     return result
   }
 })

@@ -21,7 +21,7 @@ function calculateSize(video: HTMLVideoElement, videoWidth: number, videoHeight:
 function drawVideo(video: HTMLVideoElement) {
   const canvas = document.createElement('canvas')
   const ctx = canvas.getContext('2d')
-  const maxWidth = 270
+  const maxWidth = 254
   const maxHeight = (maxWidth * 9) / 16
   const { width, height } = calculateSize(video, maxWidth, maxHeight)
   canvas.width = width
