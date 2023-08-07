@@ -1,6 +1,6 @@
 <template>
   <div class="scrollbar">
-    <n-scrollbar class="h-[calc(100vh-30px)] bg-slate-900 w-full max-h-[calc(100vh-30px)]">
+    <n-scrollbar class="h-[calc(100vh-30px)] bg-slate-700 w-full max-h-[calc(100vh-30px)]">
       <n-list class="bg-transparent">
         <n-list-item
           v-for="item in videoListStore.list"

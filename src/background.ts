@@ -4,9 +4,14 @@ import fs from 'fs'
 import { app, protocol, BrowserWindow, session, ipcMain, dialog } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
-import { fromFile } from 'file-type'
+import { FileTypeResult, fromFile } from 'file-type'
+
+import Store from 'electron-store'
+import { IUserState } from './store'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
+
+const store = new Store()
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -111,13 +116,12 @@ ipcMain.handle('open', async () => {
     for await (const item of res) {
       const name = path.basename(item)
       const { size } = fs.statSync(item)
-      const resd = await fromFile(item)
-      console.log(resd)
+      const { mime } = (await fromFile(item)) as FileTypeResult
       result.push({
         path: item,
         name,
         size,
-        // type: mime,
+        type: mime,
       })
     }
     return result
@@ -131,4 +135,10 @@ ipcMain.on('minimize', () => {
 ipcMain.on('maximize', () => {
   const falg = win.isFullScreen()
   win.setFullScreen(!falg)
+})
+
+ipcMain.handle('getState', (event, key: string) => store.get(key))
+
+ipcMain.on('setState', (event, key: string, value: IUserState) => {
+  store.set(key, value)
 })
