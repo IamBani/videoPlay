@@ -17,6 +17,21 @@ const useVideoListStore = defineStore('palyList', {
       }
       this.list.push(f)
     },
+    isHas(name: string) {
+      return this.list.find((item) => item.name === name)
+    },
+    changeCurrentTime(name: string, currentTime: number) {
+      const fileitem = this.list.find((item) => item.name === name) as file
+      fileitem.currentTime = currentTime
+    },
+    delete(name?: string) {
+      if (name) {
+        const id = this.list.findIndex((item) => item.name === name)
+        this.list.splice(id, 1)
+      } else {
+        this.list = []
+      }
+    },
   },
 })
 

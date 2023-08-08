@@ -16,7 +16,7 @@
         </div>
       </n-layout-content>
       <n-layout-sider :collapsed="collapsed" collapse-mode="width" :collapsed-width="0">
-        <Sider @changerUrl="changerUrl" :name="name"></Sider>
+        <Sider @changerUrl="changerUrl" :instance="instance" :name="name"></Sider>
       </n-layout-sider>
     </n-layout>
   </n-layout>
@@ -31,9 +31,10 @@ import captureFrame from '@/utils/videoToImag'
 import { file as fileType } from '@/preload'
 
 const videoListStore = useVideoListStore()
-const instance = ref<Artplayer | undefined>()
+const instance = ref<Artplayer>()
 
 const name = ref('')
+const current = ref()
 const collapsed = ref(true)
 
 const createArtplayer = () => {
@@ -44,23 +45,39 @@ const createArtplayer = () => {
     loop: true,
     fullscreen: true,
   })
+  instance.value.on('ready', () => {
+    if (instance.value) {
+      instance.value.currentTime = current.value
+    }
+  })
+
+  instance.value.on('restart', () => {
+    if (instance.value) {
+      instance.value.currentTime = current.value
+    }
+  })
+}
+
+const play = (item: fileType | File) => {
+  if (!instance.value) {
+    createArtplayer()
+  }
+  const element = videoListStore.isHas(item.name)
+  console.log(element)
+  if (instance.value) {
+    current.value = element?.currentTime || 0
+    instance.value.url = `file:///${element?.path || item.path}`
+    name.value = element?.name || item.name
+  }
 }
 const handleClick = () => {
   window.myApi.sendMsg().then(async (res) => {
     if (res) {
-      if (!instance.value) {
-        createArtplayer()
-      }
+      play(res[0])
       for await (const item of res) {
-        const { path, name: filename, size, type } = item
+        const { path, name: filename, size, type, currentTime } = item
         const result = (await captureFrame(path)) as any
-        videoListStore.add({ path, name: filename, size, type, ...result })
-      }
-
-      const file = res[0]
-      if (instance.value) {
-        instance.value.url = `file:///${file.path}`
-        name.value = file.name
+        videoListStore.add({ path, name: filename, size, type, currentTime, ...result })
       }
     }
   })
@@ -68,32 +85,21 @@ const handleClick = () => {
 const handledrop = async (e: DragEvent) => {
   if (e.dataTransfer) {
     if (e.dataTransfer.files[0].type.startsWith('video')) {
-      if (!instance.value) {
-        createArtplayer()
-      }
-      if (instance.value) {
-        name.value = e.dataTransfer.files[0].name
-        instance.value.url = `file:///${e.dataTransfer.files[0].path}`
-      }
+      play(e.dataTransfer.files[0])
     }
     for await (const f of e.dataTransfer.files) {
       if (f.type.startsWith('video')) {
         const { path, name: filename, size, type } = f
         const result = (await captureFrame(path)) as any
-        const list = { path, name: filename, size, type, ...result }
+        const list = { path, name: filename, size, type, currentTime: 0, ...result }
         videoListStore.add(list)
       }
     }
   }
 }
+
 const changerUrl = (item: fileType) => {
-  if (!instance.value) {
-    createArtplayer()
-  }
-  if (instance.value) {
-    instance.value.url = `file:///${item.path}`
-    name.value = item.name
-  }
+  play(item)
 }
 const openSide = () => {
   collapsed.value = !collapsed.value

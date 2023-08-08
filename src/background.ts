@@ -1,7 +1,7 @@
 import path from 'path'
 import os from 'os'
 import fs from 'fs'
-import { app, protocol, BrowserWindow, session, ipcMain, dialog } from 'electron'
+import { app, protocol, BrowserWindow, session, ipcMain, dialog, Menu } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 import { FileTypeResult, fromFile } from 'file-type'
@@ -122,6 +122,7 @@ ipcMain.handle('open', async () => {
         name,
         size,
         type: mime,
+        currentTime: 0,
       })
     }
     return result
@@ -141,4 +142,28 @@ ipcMain.handle('getState', (event, key: string) => store.get(key))
 
 ipcMain.on('setState', (event, key: string, value: IUserState) => {
   store.set(key, value)
+})
+
+ipcMain.on('contextmenu', (event) => {
+  const menu = Menu.buildFromTemplate([
+    {
+      label: '播放',
+      click: () => {
+        event.sender.send('context-menu-command', 1)
+      },
+    },
+    {
+      label: '删除',
+      click: () => {
+        event.sender.send('context-menu-command', 2)
+      },
+    },
+    {
+      label: '删除全部列表',
+      click: () => {
+        event.sender.send('context-menu-command', 3)
+      },
+    },
+  ])
+  menu.popup()
 })
