@@ -20,6 +20,8 @@ module.exports = {
     indent: 'off',
     'func-call-spacing': 'off',
     'no-spaced-func': 'off',
+    'no-param-reassign': 'off',
+    'class-methods-use-this': 'off',
   },
   overrides: [
     {
