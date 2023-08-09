@@ -24,9 +24,7 @@
 </template>
 
 <script lang="ts" setup>
-// import { ipcRenderer } from 'electron'
-
-import { defineEmits, defineProps, PropType } from 'vue'
+import { defineEmits, defineProps, PropType, toRaw } from 'vue'
 import Artplayer from 'artplayer'
 import { useDialog } from 'naive-ui'
 import { file } from '@/preload'
@@ -49,13 +47,16 @@ let F: file
 
 const handleClick = (item: file) => {
   if (props.instance) {
-    videoListStore.changeCurrentTime(item.name, props.instance?.currentTime || 0)
+    videoListStore.changeCurrentTime(props.name, props.instance?.currentTime || 0).then(() => {
+      emits('changerUrl', item)
+    })
+  } else {
+    emits('changerUrl', item)
   }
-  emits('changerUrl', item)
 }
 
 const handleContextmenu = (item: file) => {
-  F = item
+  F = toRaw(item)
   window.myApi.handleContextmenu()
 }
 

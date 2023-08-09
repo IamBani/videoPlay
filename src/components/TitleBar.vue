@@ -18,7 +18,7 @@
       <n-icon size="20" color="#fff" class="no-drag" @click="sendMaximize">
         <FullscreenFilled />
       </n-icon>
-      <n-icon size="20" color="#fff" class="no-drag">
+      <n-icon size="20" color="#fff" class="no-drag" @click="handleClose">
         <CloseFilled />
       </n-icon>
     </div>
@@ -48,6 +48,9 @@ const minimize = () => {
 }
 const sendMaximize = () => {
   window.myApi.sendMaximize()
+}
+const handleClose = () => {
+  window.myApi.handleClose()
 }
 const openSide = () => {
   emit('openSide')

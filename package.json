@@ -30,6 +30,7 @@
   },
   "devDependencies": {
     "@types/electron-devtools-installer": "^2.2.0",
+    "@types/fluent-ffmpeg": "^2.1.21",
     "@types/jest": "^27.0.1",
     "@types/lodash": "^4.14.196",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
@@ -53,6 +54,7 @@
     "eslint-plugin-vuejs-accessibility": "^1.1.0",
     "jest": "^27.0.5",
     "lint-staged": "^11.1.2",
+    "normalize.css": "^8.0.1",
     "postcss": "^8.4.27",
     "sass": "^1.32.7",
     "sass-loader": "^12.0.0",
@@ -60,7 +62,6 @@
     "ts-jest": "^27.0.4",
     "ts-loader": "~8.2.0",
     "typescript": "~4.5.5",
-    "normalize.css": "^8.0.1",
     "unplugin-auto-import": "^0.16.6",
     "unplugin-vue-components": "^0.25.1",
     "vue-cli-plugin-electron-builder": "~2.1.1"

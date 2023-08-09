@@ -21,8 +21,11 @@ const useVideoListStore = defineStore('palyList', {
       return this.list.find((item) => item.name === name)
     },
     changeCurrentTime(name: string, currentTime: number) {
-      const fileitem = this.list.find((item) => item.name === name) as file
-      fileitem.currentTime = currentTime
+      return new Promise((resolve, reject) => {
+        const fileitem = this.list.find((item) => item.name === name) as file
+        fileitem.currentTime = currentTime
+        resolve(undefined)
+      })
     },
     delete(name?: string) {
       if (name) {

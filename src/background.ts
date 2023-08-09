@@ -8,6 +8,7 @@ import { FileTypeResult, fromFile } from 'file-type'
 
 import Store from 'electron-store'
 import { IUserState } from './store'
+import Ffmepg from './Ffmepg'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -18,6 +19,7 @@ protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } },
 ])
 let win: BrowserWindow
+let ffmepg
 async function createWindow() {
   // Create the browser window.
   win = new BrowserWindow({
@@ -44,6 +46,7 @@ async function createWindow() {
     // Load the index.html when not in development
     win.loadURL('app://./index.html')
   }
+  ffmepg = new Ffmepg()
 }
 
 // Quit when all windows are closed.
@@ -136,6 +139,10 @@ ipcMain.on('minimize', () => {
 ipcMain.on('maximize', () => {
   const falg = win.isFullScreen()
   win.setFullScreen(!falg)
+})
+
+ipcMain.on('close', () => {
+  app.quit()
 })
 
 ipcMain.handle('getState', (event, key: string) => store.get(key))

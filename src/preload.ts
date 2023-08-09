@@ -20,6 +20,7 @@ export interface Api {
   sendSetState: (key: string, value: IUserState) => void
   handleContextmenu: () => void
   handleMenu: (callback: back) => Electron.IpcRenderer
+  handleClose: () => void
 }
 contextBridge.exposeInMainWorld('myApi', {
   // 这里注意避免将ipcRenderer等致命api直接挂载在window上，可能会导致安全问题
@@ -30,4 +31,5 @@ contextBridge.exposeInMainWorld('myApi', {
   sendSetState: (key, value) => ipcRenderer.send('setState', key, value),
   handleContextmenu: () => ipcRenderer.send('contextmenu'),
   handleMenu: (callback) => ipcRenderer.on('context-menu-command', callback),
+  handleClose: () => ipcRenderer.send('close'),
 } as Api)
