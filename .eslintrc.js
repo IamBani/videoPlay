@@ -22,6 +22,7 @@ module.exports = {
     'no-spaced-func': 'off',
     'no-param-reassign': 'off',
     'class-methods-use-this': 'off',
+    'vue/multi-word-component-names': 'off',
   },
   overrides: [
     {

@@ -24,6 +24,7 @@ module.exports = defineConfig({
   pluginOptions: {
     electronBuilder: {
       preload: 'src/preload.ts',
+      externals: ['@ffmpeg-installer/ffmpeg', 'fluent-ffmpeg'],
     },
   },
 })

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-param-reassign */
 
@@ -13,6 +14,7 @@ export default class Ffmepg {
   }
 
   init() {
+    console.log(123, path)
     ffmpeg.setFfmpegPath(path)
   }
 
@@ -37,6 +39,8 @@ export default class Ffmepg {
   }
 
   kill(): void {
-    this.instance?.kill('')
+    if (this.instance) {
+      this.instance.kill('')
+    }
   }
 }
