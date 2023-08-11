@@ -3,11 +3,10 @@
 /* eslint-disable no-param-reassign */
 
 import { path } from '@ffmpeg-installer/ffmpeg'
-
 import ffmpeg from 'fluent-ffmpeg'
 
 export default class Ffmepg {
-  private instance: ffmpeg.FfmpegCommand | null = null
+  instance: ffmpeg.FfmpegCommand | undefined
 
   constructor() {
     this.init()
