@@ -52,3 +52,5 @@ export default function captureFrame(file: string) {
     }
   })
 }
+
+export const videoType = ['MP4', 'WebM', 'Ogg']

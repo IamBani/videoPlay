@@ -8,7 +8,7 @@ import { FileTypeResult, fromFile } from 'file-type'
 
 import Store from 'electron-store'
 import { IUserState } from './store'
-import Ffmepg from './Ffmepg'
+import http from './serve'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -19,7 +19,6 @@ protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } },
 ])
 let win: BrowserWindow
-let ffmepg
 async function createWindow() {
   // Create the browser window.
   win = new BrowserWindow({
@@ -46,7 +45,7 @@ async function createWindow() {
     // Load the index.html when not in development
     win.loadURL('app://./index.html')
   }
-  ffmepg = new Ffmepg()
+  http()
 }
 
 // Quit when all windows are closed.
@@ -73,7 +72,7 @@ app.on('ready', async () => {
     try {
       const reactDevToolsPath = path.join(
         os.homedir(),
-        '/AppData/Local/google/Chrome/User Data/Default/Extensions/nhdogjmejiglipccpnnnanhbledajbpd/6.5.0_0'
+        '/AppData/Local/google/Chrome/User Data/Default/Extensions/nhdogjmejiglipccpnnnanhbledajbpd/6.5.0_0',
       )
       await session.defaultSession.loadExtension(reactDevToolsPath)
     } catch (error) {
@@ -114,8 +113,8 @@ ipcMain.handle('open', async () => {
     ],
     properties: ['multiSelections'],
   })
+  const result = []
   if (res) {
-    const result = []
     for await (const item of res) {
       const name = path.basename(item)
       const { size } = fs.statSync(item)
@@ -128,8 +127,8 @@ ipcMain.handle('open', async () => {
         currentTime: 0,
       })
     }
-    return result
   }
+  return result
 })
 
 ipcMain.on('minimize', () => {

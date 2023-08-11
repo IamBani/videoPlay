@@ -5,20 +5,31 @@
 import { path } from '@ffmpeg-installer/ffmpeg'
 import ffmpeg from 'fluent-ffmpeg'
 
-export default class Ffmepg {
+import stream from 'stream'
+
+type Istream = stream.Writable | stream.PassThrough | undefined
+export interface IFfmepg {
+  init: () => void
+  create: (key: string) => Istream
+  kill: () => void
+}
+
+export default class Ffmepg implements IFfmepg {
   instance: ffmpeg.FfmpegCommand | undefined
+
+  pipe: Istream
 
   constructor() {
     this.init()
   }
 
   init() {
-    console.log(123, path)
-    ffmpeg.setFfmpegPath(path)
+    this.instance = ffmpeg.setFfmpegPath(path)
   }
 
   create(input: string) {
-    this.instance = ffmpeg()
+    console.log(input)
+    this.pipe = ffmpeg()
       .input(input)
       .nativeFramerate()
       .videoCodec('libx264')
@@ -29,12 +40,14 @@ export default class Ffmepg {
         console.log(`Timemark: ${progress.timemark}`)
       })
       .on('error', (err) => {
-        console.log(`An error occurred: ${err.message}`)
+        console.log(`错误: ${err.message}`)
       })
       .on('end', () => {
         console.log('Processing finished!')
       })
-    return this.instance
+      .duration(150)
+      .pipe()
+    return this.pipe
   }
 
   kill(): void {

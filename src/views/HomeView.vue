@@ -23,11 +23,12 @@
 </template>
 
 <script lang="ts" setup>
+import axios from 'axios'
 import { ref, onMounted } from 'vue'
 import Artplayer from 'artplayer'
 import { NLayoutSider } from 'naive-ui'
 import useVideoListStore from '@/store/index'
-import captureFrame from '@/utils/videoToImag'
+import captureFrame, { videoType } from '@/utils/videoToImag'
 import { file as fileType } from '@/preload'
 
 const videoListStore = useVideoListStore()
@@ -84,14 +85,31 @@ const handleClick = () => {
 }
 const handledrop = async (e: DragEvent) => {
   if (e.dataTransfer) {
-    if (e.dataTransfer.files[0].type.startsWith('video')) {
+    const { type, path: _p } = e.dataTransfer.files[0]
+    const mine = type.split('/').at(-1) as string
+    if (type.startsWith('video') && videoType.includes(mine)) {
       play(e.dataTransfer.files[0])
+    } else {
+      axios
+        .get('http://localhost:10086', {
+          params: { path: _p },
+          responseType: 'blob',
+        })
+        .then((res) => {
+          console.log(res)
+          if (!instance.value) {
+            createArtplayer()
+          }
+          if (instance.value) {
+            instance.value.url = URL.createObjectURL(res.data)
+          }
+        })
     }
     for await (const f of e.dataTransfer.files) {
       if (f.type.startsWith('video')) {
-        const { path, name: filename, size, type } = f
+        const { path, name: filename, size, type: t } = f
         const result = (await captureFrame(path)) as any
-        const list = { path, name: filename, size, type, currentTime: 0, ...result }
+        const list = { path, name: filename, size, type: t, currentTime: 0, ...result }
         videoListStore.add(list)
       }
     }
