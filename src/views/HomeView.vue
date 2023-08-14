@@ -64,7 +64,6 @@ const play = (item: fileType | File) => {
     createArtplayer()
   }
   const element = videoListStore.isHas(item.name)
-  console.log(element)
   if (instance.value) {
     current.value = element?.currentTime || 0
     instance.value.url = `file:///${element?.path || item.path}`

@@ -61,7 +61,6 @@ const handleContextmenu = (item: file) => {
 }
 
 window.myApi.handleMenu((_event, v) => {
-  console.log(v)
   switch (v) {
     case 1:
       handleClick(F)
